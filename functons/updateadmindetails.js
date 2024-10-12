@@ -1,4 +1,4 @@
-async function Updatedata(data) {
+async function updateadmindetails(data) {
     delete data.sotp;
     const { MongoClient } = require('mongodb');
 
@@ -7,16 +7,22 @@ async function Updatedata(data) {
 
     try {
         await client.connect();
-        let { rollnumber, newpass } = data;
+        let { rollnumber, newpass,newadminid } = data;
         
         const database = client.db('HandleIt');
-        const collection = database.collection('AllUserDetails');
+        const collection = database.collection('Admin');
         const filter = { rollnumber: rollnumber };
-        const update = { $set: { password: newpass } };
+        const update = {
+            $set: {
+                password: newpass,
+                rollnumber: newadminid
+            }
+        };
 
         const result = await collection.updateOne(filter, update);
+        const result1 = await collection.updateOne(filter, update);
         if (result.modifiedCount === 1) {
-            return 'Password changed successfully';
+            return 'Details changed successfully';
         } else {
             return 'No changes made';
         }
@@ -28,4 +34,4 @@ async function Updatedata(data) {
     }
 }
 
-module.exports = Updatedata;
+module.exports = updateadmindetails;
