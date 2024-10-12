@@ -8,33 +8,38 @@ async function createaccount(data){
             // Connect to the MongoDB cluster
             await client.connect();
             let {rollnumber} = data;
-            let {password} = data;
+            let {filename} = data;
+            let {filedata} = data;
+            let sdata = {
+                'filename' : filename,
+                'filedata' : filedata
+            };
             console.log('Connected to the MongoDB cluster');
             const database = client.db('svpcettap');
-            const collection = database.collection('allstudents');
-            const collection1 = database.collection(rollnumber);
-            const query1 = { rollnumber: rollnumber };
-            const chresult1 = await collection.findOne(query1);
-            if(chresult1){
-                if(chresult1.password===password){
-                    return 'Logged in successfully';
+            const collection = database.collection(rollnumber);
+            const query = { filename: filename };
+
+            const chresult = await collection.findOne(query);
+
+            if(chresult){
+                const updateResult = await collection.updateOne(query, {
+                    $set: { filedata: filedata }
+                });
+
+                if(updateResult){
+                    return 'File updated';
                 }
-                else{
-                    return 'Incorrect password';
-                }
-                
-                
+              
             }
 
             else{
-                const result = await collection.insertOne(data);
-                const result1 = await collection1.insertOne(data1);
-                return 'Logged in successfully';
+                const result = await collection.insertOne(sdata);
+                return 'File saved';
             }
 
           } catch (error) {
               // Handle connection errors
-              return 'There is a problem in login please try again later or check your internet connection';
+              return 'There is a problem in saving files please try again later or check your internet connection';
               
             } finally {
             // Close the connection when you're done

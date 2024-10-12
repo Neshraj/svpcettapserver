@@ -9,8 +9,10 @@ async function Updatedata(data) {
         await client.connect();
         let { rollnumber, newpass } = data;
         
-        const database = client.db('HandleIt');
-        const collection = database.collection('AllUserDetails');
+        const database = client.db('svpcettap');
+        const collection = database.collection('allstudents');
+
+        // Find the document with the given roll number
         const filter = { rollnumber: rollnumber };
         const update = { $set: { password: newpass } };
 
